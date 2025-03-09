@@ -51,7 +51,10 @@ function showCategoryFilters (categoryArray) {
         buttonTous.innerText = "Tous"
     categoryFilters.appendChild(buttonTous)
 
-    manageEventListeners(buttonTous);
+    buttonTous.addEventListener("click", () => {
+        clearBtnFull()
+        buttonTous.classList.add("btn-filtres-full")
+    })
 
     for (let i = 0; i < categoryArray.length; i++) {
         const button = document.createElement("button")
@@ -61,16 +64,16 @@ function showCategoryFilters (categoryArray) {
 
         categoryFilters.appendChild(button)
 
-        manageEventListeners(button);
+        button.addEventListener("click", () => {
+            clearBtnFull()
+            const worksFiltered = works.filter((work) => {
+                return work.categoryId == button.id
 
+            })
+            showWorks(worksFiltered)
+            button.classList.add("btn-filtres-full")
+        })
     }
-}
-
-function manageEventListeners(buttonParam) {
-    buttonParam.addEventListener("click", () => {
-        clearBtnFull(buttonParam)
-        buttonParam.classList.add("btn-filtres-full");
-    });
 }
 
 function clearBtnFull() {
@@ -79,8 +82,4 @@ function clearBtnFull() {
         button.classList.remove("btn-filtres-full")
     });
 }
-
-const worksFiltered = categoryArray.filter((work) => {
-    return work.categoryId == btn.id
-});
 
