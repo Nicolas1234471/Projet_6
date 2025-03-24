@@ -121,16 +121,23 @@ li:hover {
 #introduction p {
 	margin-bottom: 0.5em;
 }
+
 #portfolio h2 {
 	text-align: center;
 	margin-bottom: 1em;
 }
 
 .category-filters {
-	display: inline;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	margin-top: 40px;
+	margin-bottom: 30px;
+	gap: 10px;
 }
 
 .btn-filtres {
+	min-width: 100px;
 	border: 1px #1D6154 solid;
 	border-radius: 60px;
 	height: 37px;
@@ -142,6 +149,7 @@ li:hover {
 }
 
 .btn-filtres-full {
+	min-width: 100px;
 	border: 1px #1D6154 solid;
 	border-radius: 60px;
 	height: 37px;
@@ -212,4 +220,3 @@ footer nav ul {
 	justify-content: flex-end;
 	margin: 2em
 }
-

@@ -1,3 +1,13 @@
+let works = [];
+let categories = [];
+const portfolio = document.getElementById("portfolio");
+const categoryFilters = document.createElement("div")
+categoryFilters.classList.add("category-filters")
+portfolio.appendChild(categoryFilters)
+const gallery = document.createElement("div");
+gallery.classList.add("gallery");
+portfolio.appendChild(gallery)
+
 async function getCategories() {
     const reponse = await fetch ("http://localhost:5678/api/categories");
     const categories = await reponse.json();
@@ -8,30 +18,24 @@ getCategories();
 
 async function getWorks() {
     const reponse = await fetch ("http://localhost:5678/api/works");
-    const works = await reponse.json();
+    works = await reponse.json();
     console.log(works)
     showWorks(works);
 }
 getWorks();
 
-function showWorks(worksArray) {
-
-    const portfolio = document.getElementById("portfolio");
-    const gallery = document.createElement("div");
-        gallery.classList.add("gallery");
-
-    portfolio.appendChild(gallery)
+function showWorks(data) {
 
     gallery.innerHTML = ""
 
-    for (let i = 0; i < worksArray.length; i++) {
+    for (let i = 0; i < data.length; i++) {
         const figure = document.createElement("figure")
         const image = document.createElement("img")
         const figcaption = document.createElement("figcaption")
 
-        image.src = worksArray[i].imageUrl
-        image.alt = worksArray[i].title
-        figcaption.innerText = worksArray[i].title
+        image.src = data[i].imageUrl
+        image.alt = data[i].title
+        figcaption.innerText = data[i].title
 
         gallery.appendChild(figure)
         figure.appendChild(image)
@@ -40,10 +44,6 @@ function showWorks(worksArray) {
 }
 
 function showCategoryFilters (categoryArray) {
-
-    const categoryFilters = document.createElement("div")
-    categoryFilters.classList.add(".category-filters")
-    portfolio.appendChild(categoryFilters)
 
     const buttonTous = document.createElement("button")
         buttonTous.classList.add("btn-filtres","btn-filtres-full")
@@ -54,6 +54,7 @@ function showCategoryFilters (categoryArray) {
     buttonTous.addEventListener("click", () => {
         clearBtnFull()
         buttonTous.classList.add("btn-filtres-full")
+        showWorks(works)
     })
 
     for (let i = 0; i < categoryArray.length; i++) {
@@ -83,3 +84,4 @@ function clearBtnFull() {
     });
 }
 
+/* PARTIE MODALE */
