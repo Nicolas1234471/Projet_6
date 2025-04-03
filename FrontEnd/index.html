@@ -6,23 +6,29 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Work+Sans&display=swap" rel="stylesheet">
 	<meta name="description" content="">
 	<link rel="stylesheet" href="./assets/style.css">
 	<script type="module" src="index.js"></script>
 </head>
 <body>
+	<div class="admin_top-bar">
+		<i class="fa-regular fa-pen-to-square"></i>
+		<span>Mode édition</span>
+	</div>
 <header>
 	<h1>Sophie Bluel <span>Architecte d'intérieur</span></h1>
 	<nav>
 		<ul>
 			<li>projets</li>
 			<li>contact</li>
-			<li>login</li>
+			<li><a href="login.html">login</li></a>
 			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 		</ul>
 	</nav>
 </header>
+<div class="overlay-modal"></div>
 <main>
 	<section id="introduction">
 		<figure>
@@ -36,7 +42,58 @@
 		</article>
 	</section>
 	<section id="portfolio">
-		<h2>Mes Projets</h2>
+		<div class="titre-modal-container">
+			<h2>Mes Projets</h2>
+			<a href="#modal1" class="js-modal">
+				<i class="fa-regular fa-pen-to-square"></i>
+				modifier
+			</a>
+		</div>
+		<aside id="modal1" class="modal" aria-hidden="" role="dialog" aria-modal="false" aria-labelledby="titlemodal" style="display: none">
+			<div class="modal-wrapper js-modal-stop">
+				<div class="modal-nav-container">
+					<i class="fa-solid fa-arrow-left fa-xl js-modal-previous js-modal-previous-hidden"></i>
+					<i class="fa-solid fa-xmark fa-xl js-modal-close"></i>
+				</div>
+				<div class="modal-flexbox">
+					<h3 id="titlemodal">Galerie photo</h3>
+					<div class="gallery-modal"></div>
+					<div class="bottom-bar-modal"></div>
+					<button id="btn-ajout-photo">Ajouter une photo</button>
+				</div>
+			</div>
+		</aside>
+		<aside id="modal2" class="modalDeux" aria-hidden="" role="dialog" aria-modal="false" aria-labelledby="titlemodalDeux" style="display: none">
+			<div class="modal-wrapper js-modal-stop">
+				<div class="modal-nav-container">
+					<i class="fa-solid fa-arrow-left fa-xl js-modal-previous"></i>
+					<i class="fa-solid fa-xmark fa-xl js-modal-close"></i>
+				</div>
+				<div class="modal-flexbox">
+					<h3 id="titlemodalDeux">Ajout photo</h3>
+					<form method="post" class="form-envoi-photo" autocomplete="off">
+						<div class="container-post-photo">
+							<i class="fa-regular fa-image icone-post-photo"></i>
+							<label for="btn-submit-photo">+ Ajouter photo</label>
+							<input type="file" id="btn-submit-photo" name="btn-submit-photo" accept="image/jpg, image/png">
+							<span>jpg, png : 4mo max</span>
+						</div>
+						<label for="titre-photo">Titre</label>
+						<input type="text" id="titre-photo" name="titre-photo"><br>
+						<label for="categorie-photo">Catégorie</label>
+						<select name="categorie-photo" id="categorie-photo"><br>
+							<option value="">Objets</option>
+							<option value="">Appartements</option>
+							<option value="">Hotels & restaurants</option>
+						</select>
+						<div class="modal-deux-barsubmit-container">
+							<div class="bottom-bar-modal"></div>
+							<input type="submit" name="btn-envoi-photo" value="Valider"><br>
+						</div>
+					</form>
+				</div>
+			</div>
+		</aside>
 	</section>
 	<section id="contact">
 		<h2>Contact</h2>
