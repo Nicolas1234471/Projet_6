@@ -231,11 +231,13 @@ const previousModal = function (e) {
 const btnAjoutPhoto = document.getElementById("btn-ajout-photo")
 const btnPreviousModalDeux = document.querySelector("#modal2 .js-modal-previous")
 
+/* Au clic du bouton d'ajout de photo, la première modale se ferme et la seconde s'ouvre */
 btnAjoutPhoto.addEventListener('click', (e) => {
     closeModal()
     openModalDeux()
 })
 
+/* Au clic du bouton précédent (flèche), la seconde modale se ferme et la première s'ouvre */
 btnPreviousModalDeux.addEventListener('click', (e) => {
     closeModalDeux()
     previousModal()
@@ -315,13 +317,6 @@ function verifyToken() {
 }
 verifyToken();
 
-/* Ajout d'une condition si le titre de photo à rentrer pour envoyer un nouveau travail est vide */
-const choosePhotoTitle = document.getElementById("titre-photo")
-
-if (choosePhotoTitle.value = null) {
-    
-}
-
 /* Création des choix possibles de catégorie d'image en fonction des catégories disponibles sur l'API */
 
 const selectCategorie = document.getElementById('categorie-photo')
@@ -358,8 +353,6 @@ chooseFile.addEventListener('change', function () {
     chooseFile.style.display = "none";
     iconePhoto.style.display = "none";
     labelSubmitPhoto.style.display = "none";
-    boutonValider.classList.remove('btn-valider-photo')
-    boutonValider.classList.add('btn-valider-photo-green')
 })
 
 /* Récupération de l'image à afficher */
@@ -377,10 +370,63 @@ function getImgData() {
 
 /* FONCTIONNEMENT DE L'AJOUT DE PHOTO AU BACKEND */
 
+const titrePhoto = document.getElementById("titre-photo");
+
+function verifierFormulairePhotoComplet() {
+    const categorieEnvoiPhoto = document.getElementById("categorie-photo").value;
+    const fichierPhoto = document.getElementById("btn-submit-photo").files.length > 0;
+    const titleField = document.getElementById("titre-photo").value.trim();
+
+    const formulaireEstComplet = titleField !== "" && categorieEnvoiPhoto !== "" && fichierPhoto;
+
+    if (formulaireEstComplet) {
+        boutonValider.classList.add("btn-valider-photo-green");
+        boutonValider.classList.remove("btn-valider-photo");
+    } else {
+        boutonValider.classList.remove("btn-valider-photo-green");
+        boutonValider.classList.add("btn-valider-photo");
+    }
+}
+
+titrePhoto.addEventListener("input", verifierFormulairePhotoComplet);
+selectCategorie.addEventListener("change", verifierFormulairePhotoComplet);
+chooseFile.addEventListener("change", verifierFormulairePhotoComplet);
+
 const formulaireEnvoiPhoto = document.querySelector('.form-envoi-photo')
 
 /* On envoie une requête à l'API en utilisant les données enregistrées dans le formulaire d'envoi de photo */
 async function envoiPhoto () {
+
+    /* Récupération des éléments HTML correpondants aux messages d'erreurs */
+    const categorieExemple = document.getElementById('categorie-photo');
+    const errorTitleEmpty = document.querySelector(".error-titre-empty")
+    const errorCategoryEmpty = document.querySelector(".error-categorie-empty")
+    const titleField = document.getElementById("titre-photo").value.trim();
+
+    let valid = true;
+    /* Si le champ de texte de titre est vide, on affiche un message d'erreur et le bouton valider reste gris */
+    if (titleField === "") {
+        errorTitleEmpty.style.display = "inline";
+        valid = false;
+        boutonValider.classList.add('btn-valider-photo')
+        boutonValider.classList.remove('btn-valider-photo-green')
+
+    } else {
+        errorTitleEmpty.style.display = "none";
+    }
+    /* Si aucune catégorie n'est choisie, on affiche un message d'erreur et le bouton valider reste gris */
+    if (categorieExemple.value === "") {
+        errorCategoryEmpty.style.display = "inline";
+        valid = false;
+        boutonValider.classList.add('btn-valider-photo')
+        boutonValider.classList.remove('btn-valider-photo-green')
+
+    } else {
+        errorCategoryEmpty.style.display = "none";
+    }
+    /* On vérifie si valid est true ou false, si il est false, la fonction s'arrête ici */
+    if (!valid) return;
+
     const formulaireEnvoiPhotoData = new FormData(formulaireEnvoiPhoto);
 
     try {
@@ -394,10 +440,14 @@ async function envoiPhoto () {
         if (response.ok) {
             reloadTravaux(galleryModal);
             closeModalDeux();
+            formulaireEnvoiPhoto.reset();
+            resetInputFile();
+            errorTitleEmpty.style.display = "none";
+            errorCategoryEmpty.style.display = "none";
         }
         /* Sinon, un message d'erreur doit apparaître au niveau de la page formulaire */
         else {
-
+            console.warn("Erreur lors de l'envoi :", response.status);
         }
     } catch (e) {
         console.error(e);
@@ -416,4 +466,11 @@ formulaireEnvoiPhoto.addEventListener('submit', (event) => {
     event.preventDefault();
     envoiPhoto();
 })
+
+function resetInputFile() {
+    previewImageFile.style.display = "none";
+    spanSubmitPhoto.style.display = "inline";
+    iconePhoto.style.display = "block";
+    labelSubmitPhoto.style.display = "flex";
+}
 

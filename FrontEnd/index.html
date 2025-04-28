@@ -23,7 +23,7 @@
 		<ul>
 			<li>projets</li>
 			<li>contact</li>
-			<li><a href="login.html">login</li></a>
+			<li><a href="login.html">login</a></li>
 			<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
 		</ul>
 	</nav>
@@ -81,9 +81,12 @@
 						<label for="titre-photo">Titre</label>
 						<input type="text" id="titre-photo" name="title"><br>
 						<label for="categorie-photo">Catégorie</label>
-						<select class="choix-categorie-photo" name="category" id="categorie-photo"><br>
+						<select class="choix-categorie-photo" name="category" id="categorie-photo">
+							<option value= "" id="#categorie-exemple">--Choisissez une catégorie--</option>
 						</select>
 						<div class="modal-deux-barsubmit-container">
+							<span class="error-titre-empty">Veuillez définir un titre.</span>
+							<span class="error-categorie-empty">Veuillez choisir une catégorie.</span>
 							<div class="bottom-bar-modal"></div>
 							<input type="submit" class="btn-valider-photo" name="btn-envoi-photo" value="Valider"><br>
 						</div>

@@ -498,6 +498,13 @@ a:visited {
     outline: none;
 }
 
+.error-titre-empty,
+.error-categorie-empty {
+	display: none;
+	color: darkred;
+	margin-top: 20px;
+}
+
 .form-envoi-photo #categorie-photo {
 	border: 0px;
 	width: 420px;
@@ -508,10 +515,6 @@ a:visited {
 
 .form-envoi-photo select {
 	padding-left: 15px;
-}
-
-select option {
-	
 }
 
 .btn-envoi-photo {
@@ -530,7 +533,7 @@ select option {
 .modalDeux .bottom-bar-modal {
 	width: 66.66%;
 	border: 1px solid #B3B3B3;
-	margin-top: 45px;
+	margin-top: 20px;
 }
 
 .btn-valider-photo {
@@ -545,18 +548,7 @@ select option {
 	border: 0px;
 	border-radius: 60px ;
 	margin-top: 35px;
-}
-
-.image-preview {
-	display: none;
-	width: 129px;
-	height: 169px;
-}
-
-.image-preview img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
+	cursor: pointer;
 }
 
 .btn-valider-photo-green {
@@ -571,4 +563,17 @@ select option {
 	border: 0px;
 	border-radius: 60px ;
 	margin-top: 35px;
+	cursor: pointer;
+}
+
+.image-preview {
+	display: none;
+	width: 129px;
+	height: 169px;
+}
+
+.image-preview img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
