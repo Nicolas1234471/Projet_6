@@ -1,5 +1,7 @@
 loginConnect()
 
+
+/* Fonction qui récupère le formulaire et envoie une requête POST au clic de l'envoi (submit) du formulaire */
 async function loginConnect() {
     const loginForm = document.querySelector(".login-form")
 
@@ -15,12 +17,15 @@ async function loginConnect() {
             body: JSON.stringify({email, password})
         })
 
+        /* Si la requête est validée (donc a les bons identifiants rentrés), l'utilisateur est connecté et redirigé
+        vers la page d'accueil et le token d'administrateur est stocké */
         if(fetchLogin.ok) {
             const dataApi = await fetchLogin.json()
             sessionStorage.setItem("token", dataApi.token)
             window.location.href = "index.html"
         }
         
+        /* Si la requête n'est pas validée, un message d'erreur est affiché */
         else {
             alert("Connexion échouée")
         }

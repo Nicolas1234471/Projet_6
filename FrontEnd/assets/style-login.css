@@ -95,11 +95,12 @@ nav ul {
 	display: flex;
 	align-items: center;
 	list-style-type: none;
+	gap: 15px;
 
 }
 nav li {
 	padding: 0 10px;
-	font-size: 1.2em;
+	font-size: 16px;
 }
 
 nav li img {
@@ -161,9 +162,13 @@ footer nav ul {
 .login-form a {
     max-width: 139px;
     margin: auto;
+	font-size: 14px;
+	font-weight: 500;
+	color: #3D3D3D;
+	text-decoration: underline solid;
 }
 
-.login-form input[type=text] {
+.login-form input[type=text], input[type=password] {
     border: 0px;
 	width: 379px;
 	height: 51px;

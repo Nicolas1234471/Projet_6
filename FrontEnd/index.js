@@ -1,3 +1,5 @@
+/* Ici on déclare les variables correspondantes aux éléments html constituant la galerie de travaux,
+et on déclare égalemet works et categories comme tableaux */
 let works = [];
 let categories = [];
 const portfolio = document.getElementById("portfolio");
@@ -8,14 +10,17 @@ const gallery = document.createElement("div");
 gallery.classList.add("gallery");
 portfolio.appendChild(gallery)
 
+/* Fonction de récupération des différentes catégories de l'API via fetch */
 async function getCategories() {
     const reponse = await fetch ("http://localhost:5678/api/categories");
     const categories = await reponse.json();
     console.log(categories)
     showCategoryFilters(categories);
+    createOption(categories);
 }
 getCategories();
 
+/* Fonction de récupération des différents travaux de l'API via fetch */
 async function getWorks() {
     const reponse = await fetch ("http://localhost:5678/api/works");
     works = await reponse.json();
@@ -25,6 +30,7 @@ async function getWorks() {
 }
 getWorks();
 
+/* Fonction générant dynamiquement l'affichage des travaux sur la page */
 function showWorks(data) {
 
     gallery.innerHTML = ""
@@ -44,8 +50,10 @@ function showWorks(data) {
     }
 }
 
+/* Fonction générant dynamiquement les boutons permettant de filtrer les travaux affichés, selon leur catégorie
+récupéré plus haut dans l'API via fetch */
 function showCategoryFilters (categoryArray) {
-
+    /* Création du bouton Tous par défaut qui affiche tous les travaux */
     const buttonTous = document.createElement("button")
         buttonTous.classList.add("btn-filtres","btn-filtres-full")
         buttonTous.id = 0
@@ -58,6 +66,8 @@ function showCategoryFilters (categoryArray) {
         showWorks(works)
     })
 
+    /* Création d'une boucle qui crée un bouton pour chaque catégorie du tableau et y associe son nom,
+    puis filtre les travaux pour afficher ceux correspondants à la catégorie séléctionnée */
     for (let i = 0; i < categoryArray.length; i++) {
         const button = document.createElement("button")
             button.classList.add("btn-filtres")
@@ -78,6 +88,7 @@ function showCategoryFilters (categoryArray) {
     }
 }
 
+/* Ici simple fonction qui déséléctionne les autres boutons lorsque que l'on clique sur un bouton filtre */
 function clearBtnFull() {
     const BoutonsFiltres = document.querySelectorAll(".btn-filtres")
     BoutonsFiltres.forEach ((button) => {
@@ -87,6 +98,7 @@ function clearBtnFull() {
 
 /* PARTIE MODALE */
 
+/* Déclaration des variables constituant le html des modales */
 let modal = null
 let modalDeux = document.getElementById("modal2")
 const focusableSelector = 'button, a, input, textarea'
@@ -129,11 +141,6 @@ const closeModal = function (e) {
 /* Ouverture et fermeture modale 2 */
 
 const openModalDeux = function (e) {
-    /* modalDeux = document.querySelector(e.target.getAttribute('href'))
-    focusables = Array.from(modalDeux.querySelectorAll(focusableSelector))
-    previouslyFocusedElement = document.querySelector(':focus') 
-    modalDeux.style.display = null
-    focusables[0].focus() */
     modalDeux = document.getElementById("modal2")
     modalDeux.style.display = "block"
     overlayModal.addEventListener('click', closeModalDeux)
@@ -159,10 +166,12 @@ const closeModalDeux = function (e) {
     modal = null
 }
 
+/* Ici la variable permet de ne pas fermer la fenêtre modale lorsque l'on clique à l'intérieur de cette dernière */
 const stopPropagation = function (e) {
     e.stopPropagation()
 }
 
+/* Ici on fait en sorte de pouvoir interagir avec la fenêtre modale au clavier uniquement */
 const focusInModal = function (e) {
     e.preventDefault()
     let index = focusables.findIndex(f => f === modal.querySelector(':focus'))
@@ -180,6 +189,7 @@ const focusInModal = function (e) {
     focusables[index].focus()
 }
 
+/* Même chose mais pour la seconde fenêtre modale */
 const focusInModalDeux = function (e) {
     e.preventDefault()
     let index = focusables.findIndex(f => f === modalDeux.querySelector(':focus'))
@@ -197,10 +207,12 @@ const focusInModalDeux = function (e) {
     focusables[index].focus()
 }
 
+/* Ici on ajoute un event listener sur le text lien "modifier" pour ouvrir la fenêtre modale */
 document.querySelectorAll(".js-modal").forEach(a => {
     a.addEventListener('click', openModal)
 })
 
+/* Bouton précédent qui permet de revenir sur la première fenêtre modale depuis la seconde */
 const previousModal = function (e) {
     modal = document.getElementById("modal1")
     focusables = Array.from(modal.querySelectorAll(focusableSelector))
@@ -217,14 +229,14 @@ const previousModal = function (e) {
 }
 
 const btnAjoutPhoto = document.getElementById("btn-ajout-photo")
-const btnPreviousModal = document.querySelector(".js-modal-previous")
+const btnPreviousModalDeux = document.querySelector("#modal2 .js-modal-previous")
 
 btnAjoutPhoto.addEventListener('click', (e) => {
     closeModal()
     openModalDeux()
 })
 
-btnPreviousModal.addEventListener('click', (e) => {
+btnPreviousModalDeux.addEventListener('click', (e) => {
     closeModalDeux()
     previousModal()
 })
@@ -250,26 +262,52 @@ window.addEventListener('keydown', function (e) {
 const modalWrapper = document.querySelector(".modal-wrapper")
 const galleryModal = document.querySelector(".gallery-modal")
 
+/* Mise en place de l'affichage de la liste des travaux dynamiquement sur la fenêtre de la première modale */
 function showWorksModal(data) {
 
+    /* On fait une boucle qui donnera pour chaque élément du tableau des travaux de l'API, le nom, l'url image
+    et id correspondant */
     for (let i = 0; i < data.length; i++) {
         const figureModal = document.createElement("figure")
         const imageModal = document.createElement("img")
         const deleteIcon = document.createElement("i")
         imageModal.classList.add("image-modal")
-        deleteIcon.classList.add("fa-solid","fa-trash-can")
+        deleteIcon.classList.add("fa-solid","fa-trash-can","icone-delete")
 
         imageModal.src = data[i].imageUrl
         imageModal.alt = data[i].title
+        deleteIcon.id = data[i].id
 
         galleryModal.appendChild(figureModal)
         figureModal.appendChild(imageModal)
         figureModal.appendChild(deleteIcon)
+
+            /* PARTIE SUPPRESSION PHOTO */
+            /* On ajoute un event listener au click sur l'icone poubelle qui envoie une requête de suppression
+            à l'API avec des conditions si réussite ou non */
+            deleteIcon.addEventListener('click', async (e) => {
+                try {
+                    const iconDeleteId = deleteIcon.getAttribute('id')
+                    const response = await fetch(`http://localhost:5678/api/works/${iconDeleteId}`, {
+                        headers: {"Authorization": `Bearer ${token}`},
+                        method: "DELETE"
+                    });
+                    if (response.ok) {
+                        figureModal.remove();
+                        reloadTravaux(galleryModal);
+                    }
+                    } catch (e) {
+                        console.error(e);
+                    }
+            });
     }
 }
 
+
+/* Récupération du token et vérification, si le token est correct, on affiche l'interface administrateur */
+
+const token = sessionStorage.getItem('token')
 function verifyToken() {
-    const token = sessionStorage.getItem('token')
     if (token) {
         adminTopBar.style.display = "flex"
         lienModal.style.display = "block"
@@ -277,5 +315,105 @@ function verifyToken() {
 }
 verifyToken();
 
-/* A FAIRE LA PROCHAINE FOIS:
-   VOIR POUR FAIRE FONCTIONNER CORRECTEMENT LE BOUTON "RETOUR" DE LA DEUXIEME MODALE */
+/* Ajout d'une condition si le titre de photo à rentrer pour envoyer un nouveau travail est vide */
+const choosePhotoTitle = document.getElementById("titre-photo")
+
+if (choosePhotoTitle.value = null) {
+    
+}
+
+/* Création des choix possibles de catégorie d'image en fonction des catégories disponibles sur l'API */
+
+const selectCategorie = document.getElementById('categorie-photo')
+
+function createOption (listeCategories) {
+    for (let i = 0; i < listeCategories.length; i++) {
+        const choixCategorie = document.createElement("option")
+        choixCategorie.innerText = listeCategories[i].name
+        choixCategorie.value = listeCategories[i].id
+
+        selectCategorie.appendChild(choixCategorie)
+    }
+}
+
+/* PARTIE FORMULAIRE ENVOI PHOTO */
+
+/* AFFICHAGE APERCU DE L'IMAGE UPLOADEE */
+
+const boutonValider = document.querySelector('.btn-valider-photo')
+const spanSubmitPhoto = document.querySelector('.form-envoi-photo span')
+const labelSubmitPhoto = document.querySelector('label[for="btn-submit-photo"]');
+const iconePhoto = document.querySelector('.icone-post-photo')
+const containerPostPhoto = document.querySelector('.container-post-photo')
+const chooseFile = document.getElementById('btn-submit-photo')
+const previewImageFile = document.createElement("div")
+previewImageFile.classList.add("image-preview")
+containerPostPhoto.appendChild(previewImageFile)
+
+/* Event listener au "changement" de statut de la séléction d'image à ajouter, ce qui supprime ce qu'il y a derrière
+pour afficher une preview de l'image séléctionnée */
+chooseFile.addEventListener('change', function () {
+    getImgData();
+    spanSubmitPhoto.style.display = "none";
+    chooseFile.style.display = "none";
+    iconePhoto.style.display = "none";
+    labelSubmitPhoto.style.display = "none";
+    boutonValider.classList.remove('btn-valider-photo')
+    boutonValider.classList.add('btn-valider-photo-green')
+})
+
+/* Récupération de l'image à afficher */
+function getImgData() {
+    const files = chooseFile.files[0];
+    if (files) {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(files);
+        fileReader.addEventListener('load', function () {
+            previewImageFile.style.display = 'block';
+            previewImageFile.innerHTML = '<img src="' + this.result + '" />';
+        });
+    }
+}
+
+/* FONCTIONNEMENT DE L'AJOUT DE PHOTO AU BACKEND */
+
+const formulaireEnvoiPhoto = document.querySelector('.form-envoi-photo')
+
+/* On envoie une requête à l'API en utilisant les données enregistrées dans le formulaire d'envoi de photo */
+async function envoiPhoto () {
+    const formulaireEnvoiPhotoData = new FormData(formulaireEnvoiPhoto);
+
+    try {
+        const response = await fetch("http://localhost:5678/api/works", {
+            headers: {"Authorization": `Bearer ${token}`},
+            method: "POST",
+            body: formulaireEnvoiPhotoData
+        });
+        console.log(await response.json());
+        /* Si la requête est validée, on actualise la liste des travaux de la page d'accueil et on ferme la modale */
+        if (response.ok) {
+            reloadTravaux(galleryModal);
+            closeModalDeux();
+        }
+        /* Sinon, un message d'erreur doit apparaître au niveau de la page formulaire */
+        else {
+
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+/* Fonction qui vide la galerie et la re-remplit avec un nouvel appel API pour actualiser les travaux */
+function reloadTravaux (dataReload) {
+    dataReload.innerHTML = ""
+    getWorks();
+}
+
+/* Envoi du formulaire */
+
+formulaireEnvoiPhoto.addEventListener('submit', (event) => {
+    event.preventDefault();
+    envoiPhoto();
+})
+

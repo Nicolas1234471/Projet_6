@@ -75,20 +75,17 @@
 						<div class="container-post-photo">
 							<i class="fa-regular fa-image icone-post-photo"></i>
 							<label for="btn-submit-photo">+ Ajouter photo</label>
-							<input type="file" id="btn-submit-photo" name="btn-submit-photo" accept="image/jpg, image/png">
+							<input type="file" id="btn-submit-photo" name="image" accept="image/jpg, image/png">
 							<span>jpg, png : 4mo max</span>
 						</div>
 						<label for="titre-photo">Titre</label>
-						<input type="text" id="titre-photo" name="titre-photo"><br>
+						<input type="text" id="titre-photo" name="title"><br>
 						<label for="categorie-photo">Catégorie</label>
-						<select name="categorie-photo" id="categorie-photo"><br>
-							<option value="">Objets</option>
-							<option value="">Appartements</option>
-							<option value="">Hotels & restaurants</option>
+						<select class="choix-categorie-photo" name="category" id="categorie-photo"><br>
 						</select>
 						<div class="modal-deux-barsubmit-container">
 							<div class="bottom-bar-modal"></div>
-							<input type="submit" name="btn-envoi-photo" value="Valider"><br>
+							<input type="submit" class="btn-valider-photo" name="btn-envoi-photo" value="Valider"><br>
 						</div>
 					</form>
 				</div>

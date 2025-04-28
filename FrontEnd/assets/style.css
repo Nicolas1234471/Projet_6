@@ -184,6 +184,8 @@ li:hover {
 
 .gallery img {
 	width: 100%;
+	height: 466px;
+	object-fit: cover;
 
 }
 #contact {
@@ -249,7 +251,6 @@ footer nav ul {
 }
 
 .admin_top-bar {
-	max-width: 1440px;
 	height: 59px;
 	background-color: black;
 	display: flex;
@@ -376,6 +377,7 @@ a:visited {
 	color: white;
 	background-color: black;
 	border: 4px solid black;
+	cursor: pointer;
 }
 
 .modal-wrapper .image-modal {
@@ -421,6 +423,7 @@ a:visited {
 	background-color: #E8F1F6;
 	border: 0px;
 	border-radius: 3px;
+	margin-bottom: 30px;
 }
 
 .container-post-photo span {
@@ -445,10 +448,9 @@ a:visited {
 	font-weight: 700;
 	font-size: 14px;
 	color: #FFFFFF;
-	background-color: #A7A7A7;
 	text-align: center;
 	border: 0px;
-	border-radius: 60px ;
+	border-radius: 50px ;
 }
 
 .form-envoi-photo label[for="btn-submit-photo"]{
@@ -457,13 +459,15 @@ a:visited {
 	align-items: center;
 	width: 173px;
 	height: 36px;
-	font-family: 'Syne';
-	font-weight: 700;
+	font-family: 'Work Sans';
+	font-weight: 500;
 	font-size: 14px;
-	color: #FFFFFF;
-	background-color: #A7A7A7;
+	color: #306685;
+	background-color: #CBD6DC;
 	border: 0px;
-	border-radius: 60px ;
+	border-radius: 50px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
 .btn-submit-photo {
@@ -483,10 +487,11 @@ a:visited {
 
 .form-envoi-photo input[type=text] {
     border: 0px;
-	width: 420px;
+	max-width: 420px;
 	height: 51px;
 	filter: drop-shadow(0px 4px 14px #00000017);
 	margin-top: 10px;
+	padding-left: 15px;
 }
 
 .form-envoi-photo input[type=text]:focus {
@@ -499,6 +504,14 @@ a:visited {
 	height: 51px;
 	filter: drop-shadow(0px 4px 14px #00000017);
 	margin-top: 10px;
+}
+
+.form-envoi-photo select {
+	padding-left: 15px;
+}
+
+select option {
+	
 }
 
 .btn-envoi-photo {
@@ -520,7 +533,7 @@ a:visited {
 	margin-top: 45px;
 }
 
-.form-envoi-photo input[type="submit"] {
+.btn-valider-photo {
 	width: 237px;
 	height: 36px;
 	font-family: 'Syne';
@@ -528,6 +541,32 @@ a:visited {
 	font-size: 14px;
 	color: #FFFFFF;
 	background-color: #A7A7A7;
+	text-align: center;
+	border: 0px;
+	border-radius: 60px ;
+	margin-top: 35px;
+}
+
+.image-preview {
+	display: none;
+	width: 129px;
+	height: 169px;
+}
+
+.image-preview img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.btn-valider-photo-green {
+	width: 237px;
+	height: 36px;
+	font-family: 'Syne';
+	font-weight: 700;
+	font-size: 14px;
+	color: #FFFFFF;
+	background-color: #1D6154;
 	text-align: center;
 	border: 0px;
 	border-radius: 60px ;
