@@ -63,6 +63,15 @@ header li {
 	cursor: pointer;
 }
 
+header .login-redirect {
+	display: block;
+}
+
+header .logout-nav {
+	display: none;
+	cursor: pointer;
+}
+
 section {
 	margin: 50px 0
 }

@@ -305,17 +305,39 @@ function showWorksModal(data) {
     }
 }
 
+/* Fonction qui vide la galerie et la re-remplit avec un nouvel appel API pour actualiser les travaux */
+function reloadTravaux (dataReload) {
+    dataReload.innerHTML = ""
+    getWorks();
+}
 
 /* Récupération du token et vérification, si le token est correct, on affiche l'interface administrateur */
 
-const token = sessionStorage.getItem('token')
+const token = sessionStorage.getItem('token');
+const loginLink = document.querySelector(".login-redirect");
+const logoutNav = document.querySelector(".logout-nav")
+
 function verifyToken() {
     if (token) {
         adminTopBar.style.display = "flex"
         lienModal.style.display = "block"
+        loginLink.style.display = "none"
+        logoutNav.style.display = "block"
+        logoutNav.addEventListener("click", () => {
+            sessionStorage.removeItem("token");
+
+        })
     }
 }
 verifyToken();
+
+function logoutAdmin () {
+    logoutNav.addEventListener("click", () => {
+        sessionStorage.removeItem(token);
+        window.location.reload();
+    })
+}
+logoutAdmin();
 
 /* Création des choix possibles de catégorie d'image en fonction des catégories disponibles sur l'API */
 
@@ -452,12 +474,6 @@ async function envoiPhoto () {
     } catch (e) {
         console.error(e);
     }
-}
-
-/* Fonction qui vide la galerie et la re-remplit avec un nouvel appel API pour actualiser les travaux */
-function reloadTravaux (dataReload) {
-    dataReload.innerHTML = ""
-    getWorks();
 }
 
 /* Envoi du formulaire */
