@@ -297,6 +297,13 @@ function showWorksModal(data) {
                     if (response.ok) {
                         figureModal.remove();
                         reloadTravaux(galleryModal);
+
+                        const buttonTous = document.querySelector('.btn-filtres[id="0"]');
+                        if (buttonTous) {
+                            clearBtnFull();
+                            buttonTous.classList.add("btn-filtres-full");
+                            showWorks(works);
+                        }
                     }
                     } catch (e) {
                         console.error(e);
@@ -466,6 +473,13 @@ async function envoiPhoto () {
             resetInputFile();
             errorTitleEmpty.style.display = "none";
             errorCategoryEmpty.style.display = "none";
+
+            const buttonTous = document.querySelector('.btn-filtres[id="0"]');
+            if (buttonTous) {
+                clearBtnFull();
+                buttonTous.classList.add("btn-filtres-full");
+                showWorks(works);
+            }
         }
         /* Sinon, un message d'erreur doit apparaître au niveau de la page formulaire */
         else {
