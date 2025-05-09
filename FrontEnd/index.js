@@ -435,32 +435,26 @@ async function envoiPhoto () {
     const fichierPhotoEmpty = document.getElementById("btn-submit-photo").files.length < 1;
 
     let valid = true;
-    /* Si le champ de texte de titre est vide, on affiche un message d'erreur et le bouton valider reste gris */
+    /* Si le champ de texte de titre est vide, on affiche un message d'erreur */
     if (titleField === "") {
         errorTitleEmpty.style.display = "inline";
         valid = false;
-        boutonValider.classList.add('btn-valider-photo')
-        boutonValider.classList.remove('btn-valider-photo-green')
 
     } else {
         errorTitleEmpty.style.display = "none";
     }
-    /* Si aucune catégorie n'est choisie, on affiche un message d'erreur et le bouton valider reste gris */
+    /* Si aucune catégorie n'est choisie, on affiche un message d'erreur */
     if (categorieExemple.value === "") {
         errorCategoryEmpty.style.display = "inline";
         valid = false;
-        boutonValider.classList.add('btn-valider-photo')
-        boutonValider.classList.remove('btn-valider-photo-green')
 
     } else {
         errorCategoryEmpty.style.display = "none";
     }
-
+    /* Si aucune image à uploader n'est choisie, on affiche un message d'erreur */
     if (fichierPhotoEmpty) {
         errorPhotoEmpty.style.display = "inline";
         valid = false;
-        boutonValider.classList.add('btn-valider-photo')
-        boutonValider.classList.remove('btn-valider-photo-green')
 
     } else {
         errorPhotoEmpty.style.display = "none";
