@@ -428,9 +428,11 @@ async function envoiPhoto () {
 
     /* Récupération des éléments HTML correpondants aux messages d'erreurs */
     const categorieExemple = document.getElementById('categorie-photo');
-    const errorTitleEmpty = document.querySelector(".error-titre-empty")
-    const errorCategoryEmpty = document.querySelector(".error-categorie-empty")
+    const errorPhotoEmpty = document.querySelector(".error-photo-empty");
+    const errorTitleEmpty = document.querySelector(".error-titre-empty");
+    const errorCategoryEmpty = document.querySelector(".error-categorie-empty");
     const titleField = document.getElementById("titre-photo").value.trim();
+    const fichierPhotoEmpty = document.getElementById("btn-submit-photo").files.length < 1;
 
     let valid = true;
     /* Si le champ de texte de titre est vide, on affiche un message d'erreur et le bouton valider reste gris */
@@ -453,6 +455,17 @@ async function envoiPhoto () {
     } else {
         errorCategoryEmpty.style.display = "none";
     }
+
+    if (fichierPhotoEmpty) {
+        errorPhotoEmpty.style.display = "inline";
+        valid = false;
+        boutonValider.classList.add('btn-valider-photo')
+        boutonValider.classList.remove('btn-valider-photo-green')
+
+    } else {
+        errorPhotoEmpty.style.display = "none";
+    }
+
     /* On vérifie si valid est true ou false, si il est false, la fonction s'arrête ici */
     if (!valid) return;
 
