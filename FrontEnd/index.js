@@ -3,38 +3,76 @@ et on déclare égalemet works et categories comme tableaux */
 let works = [];
 let categories = [];
 const portfolio = document.getElementById("portfolio");
-const categoryFilters = document.createElement("div")
-categoryFilters.classList.add("category-filters")
-portfolio.appendChild(categoryFilters)
+const categoryFiltersContainer = document.createElement("div")
+categoryFiltersContainer.classList.add("category-filters")
+portfolio.appendChild(categoryFiltersContainer)
 const gallery = document.createElement("div");
 gallery.classList.add("gallery");
 portfolio.appendChild(gallery)
+/* Variables constituant le html des modales */
+let modal = null
+let modalTwo = document.getElementById("modal2")
+const focusableSelector = 'button, a, input, textarea'
+let focusables = []
+let previouslyFocusedElement = null
+const overlayModal = document.querySelector(".overlay-modal")
+const adminTopBar = document.querySelector(".admin_top-bar")
+const modalLink = document.querySelector(".js-modal")
+const modalWrapper = document.querySelector(".modal-wrapper")
+const galleryModal = document.querySelector(".gallery-modal")
+const buttonAddPictureModal = document.getElementById("btn-ajout-photo")
+const buttonPreviousModalTwo = document.querySelector("#modal2 .js-modal-previous")
+/* Gestion du token et des boutons de connexion/déconnexion */
+const token = sessionStorage.getItem('token');
+const loginNav = document.querySelector(".login-redirect");
+const logoutNav = document.querySelector(".logout-nav")
+/* Variables du formulaire d'ajout de photo */
+const formSendPicture = document.querySelector('.form-envoi-photo')
+const buttonValider = document.querySelector('.btn-valider-photo')
+const spanSubmitPhoto = document.querySelector('.form-envoi-photo span')
+const labelSubmitPhoto = document.querySelector('label[for="btn-submit-photo"]');
+const iconPhoto = document.querySelector('.icone-post-photo')
+const containerPostPhoto = document.querySelector('.container-post-photo')
+const chooseFile = document.getElementById('btn-submit-photo')
+const previewImageFile = document.createElement("div")
+previewImageFile.classList.add("image-preview")
+containerPostPhoto.appendChild(previewImageFile)
+const titlePhoto = document.getElementById("titre-photo");
+const selectCategory = document.getElementById('categorie-photo')
 
 /* Fonction de récupération des différentes catégories de l'API via fetch */
 async function getCategories() {
-    const reponse = await fetch ("http://localhost:5678/api/categories");
-    const categories = await reponse.json();
-    console.log(categories)
-    showCategoryFilters(categories);
-    createOption(categories);
+    try {
+        const response = await fetch ("http://localhost:5678/api/categories");
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        categories = await response.json();
+        showCategoryFilters(categories);
+        createOptionCategoryChoice(categories);
+    } catch (e) {
+        console.error("Erreur lors de la récupération des catégories:", e);
+    }
 }
-getCategories();
 
 /* Fonction de récupération des différents travaux de l'API via fetch */
 async function getWorks() {
-    const reponse = await fetch ("http://localhost:5678/api/works");
-    works = await reponse.json();
-    console.log(works)
-    showWorks(works)
-    showWorksModal(works);
+    try {
+        const response = await fetch ("http://localhost:5678/api/works");
+        if (!response.ok) {
+            throw new Error (`Erreur HTTP: ${response.status}`);
+        }
+        works = await response.json();
+        showWorks(works)
+        showWorksModal(works);
+    } catch (e) {
+        console.error("Erreur lors de la récupération des travaux :", e);
+    }
 }
-getWorks();
 
 /* Fonction générant dynamiquement l'affichage des travaux sur la page */
 function showWorks(data) {
-
     gallery.innerHTML = ""
-
     for (let i = 0; i < data.length; i++) {
         const figure = document.createElement("figure")
         const image = document.createElement("img")
@@ -43,11 +81,18 @@ function showWorks(data) {
         image.src = data[i].imageUrl
         image.alt = data[i].title
         figcaption.innerText = data[i].title
-
         gallery.appendChild(figure)
         figure.appendChild(image)
         figure.appendChild(figcaption)
     }
+}
+
+/* Ici simple fonction qui déséléctionne les autres boutons lorsque que l'on clique sur un bouton filtre */
+function clearBtnFull() {
+    const buttonsFilters = document.querySelectorAll(".btn-filtres")
+    buttonsFilters.forEach ((button) => {
+        button.classList.remove("btn-filtres-full")
+    });
 }
 
 /* Fonction générant dynamiquement les boutons permettant de filtrer les travaux affichés, selon leur catégorie
@@ -55,32 +100,29 @@ récupéré plus haut dans l'API via fetch */
 function showCategoryFilters (categoryArray) {
     /* Création du bouton Tous par défaut qui affiche tous les travaux */
     const buttonTous = document.createElement("button")
-        buttonTous.classList.add("btn-filtres","btn-filtres-full")
-        buttonTous.id = 0
-        buttonTous.innerText = "Tous"
-    categoryFilters.appendChild(buttonTous)
+    buttonTous.classList.add("btn-filtres","btn-filtres-full")
+    buttonTous.id = 0
+    buttonTous.innerText = "Tous"
+    categoryFiltersContainer.appendChild(buttonTous)
 
     buttonTous.addEventListener("click", () => {
         clearBtnFull()
         buttonTous.classList.add("btn-filtres-full")
         showWorks(works)
     })
-
     /* Création d'une boucle qui crée un bouton pour chaque catégorie du tableau et y associe son nom,
     puis filtre les travaux pour afficher ceux correspondants à la catégorie séléctionnée */
     for (let i = 0; i < categoryArray.length; i++) {
         const button = document.createElement("button")
-            button.classList.add("btn-filtres")
-            button.id = categoryArray[i].id
-            button.innerText = categoryArray[i].name
-
-        categoryFilters.appendChild(button)
+        button.classList.add("btn-filtres")
+        button.id = categoryArray[i].id
+        button.innerText = categoryArray[i].name
+        categoryFiltersContainer.appendChild(button)
 
         button.addEventListener("click", () => {
             clearBtnFull()
             const worksFiltered = works.filter((work) => {
                 return work.categoryId == button.id
-
             })
             showWorks(worksFiltered)
             button.classList.add("btn-filtres-full")
@@ -88,28 +130,8 @@ function showCategoryFilters (categoryArray) {
     }
 }
 
-/* Ici simple fonction qui déséléctionne les autres boutons lorsque que l'on clique sur un bouton filtre */
-function clearBtnFull() {
-    const BoutonsFiltres = document.querySelectorAll(".btn-filtres")
-    BoutonsFiltres.forEach ((button) => {
-        button.classList.remove("btn-filtres-full")
-    });
-}
-
 /* PARTIE MODALE */
-
-/* Déclaration des variables constituant le html des modales */
-let modal = null
-let modalDeux = document.getElementById("modal2")
-const focusableSelector = 'button, a, input, textarea'
-let focusables = []
-let previouslyFocusedElement = null
-const overlayModal = document.querySelector(".overlay-modal")
-const adminTopBar = document.querySelector(".admin_top-bar")
-const lienModal = document.querySelector(".js-modal")
-
 /* Ouverture et fermeture modale 1 */
-
 const openModal = function (e) {
     modal = document.querySelector(e.target.getAttribute('href'))
     focusables = Array.from(modal.querySelectorAll(focusableSelector))
@@ -139,30 +161,29 @@ const closeModal = function (e) {
 }
 
 /* Ouverture et fermeture modale 2 */
-
-const openModalDeux = function (e) {
-    modalDeux = document.getElementById("modal2")
-    modalDeux.style.display = "block"
-    overlayModal.addEventListener('click', closeModalDeux)
+const openModalTwo = function (e) {
+    modalTwo = document.getElementById("modal2")
+    modalTwo.style.display = "block"
+    overlayModal.addEventListener('click', closeModalTwo)
     overlayModal.style.display = "block"
-    modalDeux.removeAttribute('aria-hidden')
-    modalDeux.setAttribute('aria-modal', 'true')
-    modalDeux.addEventListener('click', closeModalDeux)
-    modalDeux.querySelector('.js-modal-close').addEventListener('click', closeModalDeux)
-    modalDeux.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
+    modalTwo.removeAttribute('aria-hidden')
+    modalTwo.setAttribute('aria-modal', 'true')
+    modalTwo.addEventListener('click', closeModalTwo)
+    modalTwo.querySelector('.js-modal-close').addEventListener('click', closeModalTwo)
+    modalTwo.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
 }
 
-const closeModalDeux = function (e) {
-    modalDeux = document.getElementById("modal2")
-    if (modalDeux === null) return
+const closeModalTwo = function (e) {
+    modalTwo = document.getElementById("modal2")
+    if (modalTwo === null) return
     if (previouslyFocusedElement !== null) previouslyFocusedElement.focus()
     overlayModal.style.display = "none"
-    modalDeux.style.display = "none"
-    modalDeux.setAttribute('aria-hidden', 'true')
-    modalDeux.removeAttribute('aria-modal')
-    modalDeux.removeEventListener('click', closeModalDeux)
-    modalDeux.querySelector('.js-modal-close').removeEventListener('click', closeModalDeux)
-    modalDeux.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
+    modalTwo.style.display = "none"
+    modalTwo.setAttribute('aria-hidden', 'true')
+    modalTwo.removeAttribute('aria-modal')
+    modalTwo.removeEventListener('click', closeModalTwo)
+    modalTwo.querySelector('.js-modal-close').removeEventListener('click', closeModalTwo)
+    modalTwo.querySelector('.js-modal-stop').removeEventListener('click', stopPropagation)
     modal = null
 }
 
@@ -190,9 +211,9 @@ const focusInModal = function (e) {
 }
 
 /* Même chose mais pour la seconde fenêtre modale */
-const focusInModalDeux = function (e) {
+const focusInModalTwo = function (e) {
     e.preventDefault()
-    let index = focusables.findIndex(f => f === modalDeux.querySelector(':focus'))
+    let index = focusables.findIndex(f => f === modalTwo.querySelector(':focus'))
     if (e.shiftKey === true) {
         index--
     } else {
@@ -228,18 +249,15 @@ const previousModal = function (e) {
     modal.querySelector('.js-modal-stop').addEventListener('click', stopPropagation)
 }
 
-const btnAjoutPhoto = document.getElementById("btn-ajout-photo")
-const btnPreviousModalDeux = document.querySelector("#modal2 .js-modal-previous")
-
 /* Au clic du bouton d'ajout de photo, la première modale se ferme et la seconde s'ouvre */
-btnAjoutPhoto.addEventListener('click', (e) => {
+buttonAddPictureModal.addEventListener('click', (e) => {
     closeModal()
-    openModalDeux()
+    openModalTwo()
 })
 
 /* Au clic du bouton précédent (flèche), la seconde modale se ferme et la première s'ouvre */
-btnPreviousModalDeux.addEventListener('click', (e) => {
-    closeModalDeux()
+buttonPreviousModalTwo.addEventListener('click', (e) => {
+    closeModalTwo()
     previousModal()
 })
 
@@ -254,19 +272,15 @@ window.addEventListener('keydown', function (e) {
 
 window.addEventListener('keydown', function (e) {
     if (e.key === "Escape" || e.key === "Esc") {
-        closeModalDeux(e)
+        closeModalTwo(e)
     }
     if (e.key === 'Tab' && modal !== null) {
-        focusInModalDeux(e)
+        focusInModalTwo(e)
     }
 })
 
-const modalWrapper = document.querySelector(".modal-wrapper")
-const galleryModal = document.querySelector(".gallery-modal")
-
 /* Mise en place de l'affichage de la liste des travaux dynamiquement sur la fenêtre de la première modale */
 function showWorksModal(data) {
-
     /* On fait une boucle qui donnera pour chaque élément du tableau des travaux de l'API, le nom, l'url image
     et id correspondant */
     for (let i = 0; i < data.length; i++) {
@@ -296,39 +310,35 @@ function showWorksModal(data) {
                     });
                     if (response.ok) {
                         figureModal.remove();
-                        reloadTravaux(galleryModal);
-
+                        reloadWorks(galleryModal);
                         const buttonTous = document.querySelector('.btn-filtres[id="0"]');
                         if (buttonTous) {
                             clearBtnFull();
                             buttonTous.classList.add("btn-filtres-full");
                             showWorks(works);
-                        }
+                        }  
+                    } else {
+                        console.warn("Erreur lors de la suppression :", response.status);
                     }
-                    } catch (e) {
-                        console.error(e);
-                    }
+                } catch (e) {
+                    console.error(e);
+                }
             });
     }
 }
 
 /* Fonction qui vide la galerie et la re-remplit avec un nouvel appel API pour actualiser les travaux */
-function reloadTravaux (dataReload) {
+function reloadWorks (dataReload) {
     dataReload.innerHTML = ""
     getWorks();
 }
 
 /* Récupération du token et vérification, si le token est correct, on affiche l'interface administrateur */
-
-const token = sessionStorage.getItem('token');
-const loginLink = document.querySelector(".login-redirect");
-const logoutNav = document.querySelector(".logout-nav")
-
 function verifyToken() {
     if (token) {
         adminTopBar.style.display = "flex"
-        lienModal.style.display = "block"
-        loginLink.style.display = "none"
+        modalLink.style.display = "block"
+        loginNav.style.display = "none"
         logoutNav.style.display = "block"
         logoutNav.addEventListener("click", () => {
             sessionStorage.removeItem("token");
@@ -336,51 +346,34 @@ function verifyToken() {
         })
     }
 }
-verifyToken();
 
+/* Déconnexion de l'utilisateur au clic du bouton logout */
 function logoutAdmin () {
     logoutNav.addEventListener("click", () => {
         sessionStorage.removeItem(token);
         window.location.reload();
     })
 }
-logoutAdmin();
 
 /* Création des choix possibles de catégorie d'image en fonction des catégories disponibles sur l'API */
-
-const selectCategorie = document.getElementById('categorie-photo')
-
-function createOption (listeCategories) {
-    for (let i = 0; i < listeCategories.length; i++) {
-        const choixCategorie = document.createElement("option")
-        choixCategorie.innerText = listeCategories[i].name
-        choixCategorie.value = listeCategories[i].id
-
-        selectCategorie.appendChild(choixCategorie)
+function createOptionCategoryChoice (categoryList) {
+    for (let i = 0; i < categoryList.length; i++) {
+        const categoryChoice = document.createElement("option")
+        categoryChoice.innerText = categoryList[i].name
+        categoryChoice.value = categoryList[i].id
+        selectCategory.appendChild(categoryChoice)
     }
 }
 
 /* PARTIE FORMULAIRE ENVOI PHOTO */
-
 /* AFFICHAGE APERCU DE L'IMAGE UPLOADEE */
-
-const boutonValider = document.querySelector('.btn-valider-photo')
-const spanSubmitPhoto = document.querySelector('.form-envoi-photo span')
-const labelSubmitPhoto = document.querySelector('label[for="btn-submit-photo"]');
-const iconePhoto = document.querySelector('.icone-post-photo')
-const containerPostPhoto = document.querySelector('.container-post-photo')
-const chooseFile = document.getElementById('btn-submit-photo')
-const previewImageFile = document.createElement("div")
-previewImageFile.classList.add("image-preview")
-containerPostPhoto.appendChild(previewImageFile)
-
 /* Event listener au "changement" de statut de la séléction d'image à ajouter, ce qui supprime ce qu'il y a derrière
 pour afficher une preview de l'image séléctionnée */
 chooseFile.addEventListener('change', function () {
     getImgData();
     spanSubmitPhoto.style.display = "none";
     chooseFile.style.display = "none";
-    iconePhoto.style.display = "none";
+    iconPhoto.style.display = "none";
     labelSubmitPhoto.style.display = "none";
 })
 
@@ -398,41 +391,34 @@ function getImgData() {
 }
 
 /* FONCTIONNEMENT DE L'AJOUT DE PHOTO AU BACKEND */
-
-const titrePhoto = document.getElementById("titre-photo");
-
-function verifierFormulairePhotoComplet() {
-    const categorieEnvoiPhoto = document.getElementById("categorie-photo").value;
-    const fichierPhoto = document.getElementById("btn-submit-photo").files.length > 0;
+function checkFormComplete() {
+    const sendPictureCategory = document.getElementById("categorie-photo").value;
+    const pictureFile = document.getElementById("btn-submit-photo").files.length > 0;
     const titleField = document.getElementById("titre-photo").value.trim();
+    const formIsComplete = titleField !== "" && sendPictureCategory !== "" && pictureFile;
 
-    const formulaireEstComplet = titleField !== "" && categorieEnvoiPhoto !== "" && fichierPhoto;
-
-    if (formulaireEstComplet) {
-        boutonValider.classList.add("btn-valider-photo-green");
-        boutonValider.classList.remove("btn-valider-photo");
+    if (formIsComplete) {
+        buttonValider.classList.add("btn-valider-photo-green");
+        buttonValider.classList.remove("btn-valider-photo");
     } else {
-        boutonValider.classList.remove("btn-valider-photo-green");
-        boutonValider.classList.add("btn-valider-photo");
+        buttonValider.classList.remove("btn-valider-photo-green");
+        buttonValider.classList.add("btn-valider-photo");
     }
 }
 
-titrePhoto.addEventListener("input", verifierFormulairePhotoComplet);
-selectCategorie.addEventListener("change", verifierFormulairePhotoComplet);
-chooseFile.addEventListener("change", verifierFormulairePhotoComplet);
-
-const formulaireEnvoiPhoto = document.querySelector('.form-envoi-photo')
+titlePhoto.addEventListener("input", checkFormComplete);
+selectCategory.addEventListener("change", checkFormComplete);
+chooseFile.addEventListener("change", checkFormComplete);
 
 /* On envoie une requête à l'API en utilisant les données enregistrées dans le formulaire d'envoi de photo */
-async function envoiPhoto () {
-
+async function sendPicture() {
     /* Récupération des éléments HTML correpondants aux messages d'erreurs */
-    const categorieExemple = document.getElementById('categorie-photo');
+    const categoryExample = document.getElementById('categorie-photo');
     const errorPhotoEmpty = document.querySelector(".error-photo-empty");
     const errorTitleEmpty = document.querySelector(".error-titre-empty");
     const errorCategoryEmpty = document.querySelector(".error-categorie-empty");
     const titleField = document.getElementById("titre-photo").value.trim();
-    const fichierPhotoEmpty = document.getElementById("btn-submit-photo").files.length < 1;
+    const filePhotoEmpty = document.getElementById("btn-submit-photo").files.length < 1;
 
     let valid = true;
     /* Si le champ de texte de titre est vide, on affiche un message d'erreur */
@@ -444,7 +430,7 @@ async function envoiPhoto () {
         errorTitleEmpty.style.display = "none";
     }
     /* Si aucune catégorie n'est choisie, on affiche un message d'erreur */
-    if (categorieExemple.value === "") {
+    if (categoryExample.value === "") {
         errorCategoryEmpty.style.display = "inline";
         valid = false;
 
@@ -452,31 +438,30 @@ async function envoiPhoto () {
         errorCategoryEmpty.style.display = "none";
     }
     /* Si aucune image à uploader n'est choisie, on affiche un message d'erreur */
-    if (fichierPhotoEmpty) {
+    if (filePhotoEmpty) {
         errorPhotoEmpty.style.display = "inline";
         valid = false;
 
     } else {
         errorPhotoEmpty.style.display = "none";
     }
-
     /* On vérifie si valid est true ou false, si il est false, la fonction s'arrête ici */
     if (!valid) return;
 
-    const formulaireEnvoiPhotoData = new FormData(formulaireEnvoiPhoto);
+    const formSendPictureData = new FormData(formSendPicture);
 
     try {
         const response = await fetch("http://localhost:5678/api/works", {
             headers: {"Authorization": `Bearer ${token}`},
             method: "POST",
-            body: formulaireEnvoiPhotoData
+            body: formSendPictureData
         });
         console.log(await response.json());
         /* Si la requête est validée, on actualise la liste des travaux de la page d'accueil et on ferme la modale */
         if (response.ok) {
-            reloadTravaux(galleryModal);
-            closeModalDeux();
-            formulaireEnvoiPhoto.reset();
+            reloadWorks(galleryModal);
+            closeModalTwo();
+            formSendPicture.reset();
             resetInputFile();
             errorTitleEmpty.style.display = "none";
             errorCategoryEmpty.style.display = "none";
@@ -498,16 +483,21 @@ async function envoiPhoto () {
 }
 
 /* Envoi du formulaire */
-
-formulaireEnvoiPhoto.addEventListener('submit', (event) => {
+formSendPicture.addEventListener('submit', (event) => {
     event.preventDefault();
-    envoiPhoto();
+    sendPicture();
 })
 
 function resetInputFile() {
     previewImageFile.style.display = "none";
     spanSubmitPhoto.style.display = "inline";
-    iconePhoto.style.display = "block";
+    iconPhoto.style.display = "block";
     labelSubmitPhoto.style.display = "flex";
 }
+
+/* Appels de fonction initiales */
+getCategories();
+getWorks();
+verifyToken();
+logoutAdmin();
 
